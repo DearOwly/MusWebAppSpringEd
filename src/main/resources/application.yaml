@@ -1,0 +1,15 @@
+spring:
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        username: postgres
+        password: HateYou1
+        url: jdbc:postgresql://localhost:5432/muswebappSpring
+        hikari:
+            maximum-pool-size: 20
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+        properties:
+            hibernate:
+                format_sql: true
