@@ -33,9 +33,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String email = oAuth2User.getAttribute("email");
 
         Optional<User> userOptional = repository.findByEmail(email);
+        User user;
 
         if (userOptional.isPresent()) {
-            User user = userOptional.get();
+            user = userOptional.get();
 
             AuthProvider userAuthProvider = user.getAuthProvider();
             AuthProvider authProvider = getAuthProvider(request);
@@ -44,21 +45,21 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 throw new AuthProviderMismatchException(userAuthProvider, authProvider);
             }
 
-            updateUser(user, oAuth2User);
+            user = updateUser(user, oAuth2User);
         } else {
-            createUser(request, oAuth2User);
+            user = createUser(request, oAuth2User);
         }
 
-        return new CustomOAuth2User(oAuth2User, nameAttributeKey);
+        return new CustomOAuth2User(oAuth2User, nameAttributeKey, user.getId());
     }
 
-    private void updateUser(User user, OAuth2User oAuth2User) {
+    private User updateUser(User user, OAuth2User oAuth2User) {
         user.setGivenName(oAuth2User.getAttribute("given_name"));
         user.setFamilyName(oAuth2User.getAttribute("family_name"));
-        repository.save(user);
+        return repository.save(user);
     }
 
-    private void createUser(OAuth2UserRequest request, OAuth2User oAuth2User) {
+    private User createUser(OAuth2UserRequest request, OAuth2User oAuth2User) {
         User user = User.builder()
                         .authProvider(AuthProvider.valueOf(request.getClientRegistration().getRegistrationId().toUpperCase()))
                         .authProviderId(oAuth2User.getAttribute("sub"))
@@ -68,7 +69,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                         .familyName(oAuth2User.getAttribute("family_name"))
                         .build();
 
-        repository.save(user);
+        return repository.save(user);
     }
 
     private AuthProvider getAuthProvider(OAuth2UserRequest request) {

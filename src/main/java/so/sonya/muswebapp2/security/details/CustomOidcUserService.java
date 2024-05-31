@@ -33,9 +33,10 @@ public class CustomOidcUserService extends OidcUserService {
         String email = oidcUser.getEmail();
 
         Optional<User> userOptional = repository.findByEmail(email);
+        User user;
 
         if (userOptional.isPresent()) {
-            User user = userOptional.get();
+            user = userOptional.get();
 
             AuthProvider userAuthProvider = user.getAuthProvider();
             AuthProvider authProvider = getAuthProvider(request);
@@ -44,22 +45,22 @@ public class CustomOidcUserService extends OidcUserService {
                 throw new AuthProviderMismatchException(userAuthProvider, authProvider);
             }
 
-            updateUser(user, oidcUser);
+            user = updateUser(user, oidcUser);
         } else {
-            createUser(request, oidcUser);
+            user = createUser(request, oidcUser);
         }
 
-        return new CustomOidcUser(oidcUser, nameAttributeKey);
+        return new CustomOidcUser(oidcUser, nameAttributeKey, user.getId());
     }
 
-    private void updateUser(User user, OidcUser oidcUser) {
+    private User updateUser(User user, OidcUser oidcUser) {
         user.setGivenName(oidcUser.getGivenName());
         user.setFamilyName(oidcUser.getFamilyName());
 
-        repository.save(user);
+        return repository.save(user);
     }
 
-    private void createUser(OidcUserRequest request, OidcUser oidcUser) {
+    private User createUser(OidcUserRequest request, OidcUser oidcUser) {
         User user = User.builder()
                         .authProvider(getAuthProvider(request))
                         .authProviderId(oidcUser.getSubject())
@@ -69,7 +70,7 @@ public class CustomOidcUserService extends OidcUserService {
                         .familyName(oidcUser.getFamilyName())
                         .build();
 
-        repository.save(user);
+        return repository.save(user);
     }
 
     private AuthProvider getAuthProvider(OidcUserRequest request) {

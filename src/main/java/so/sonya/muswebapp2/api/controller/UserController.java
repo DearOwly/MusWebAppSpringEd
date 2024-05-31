@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 import so.sonya.muswebapp2.api.UserApi;
 import so.sonya.muswebapp2.dto.request.UpdateUserRequest;
 import so.sonya.muswebapp2.dto.response.UserResponse;
+import so.sonya.muswebapp2.security.details.UserDetailsWithId;
 import so.sonya.muswebapp2.service.UserService;
 
-import java.security.Principal;
 import java.util.UUID;
 
 @RestController
@@ -27,8 +27,8 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public UserResponse updateInfo(UpdateUserRequest updateUserRequest, Principal principal) {
-        return null;
+    public UserResponse updateInfo(UpdateUserRequest updateUserRequest, UserDetailsWithId user) {
+        return service.update(user.getId(), updateUserRequest);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class UserController implements UserApi {
     }
 
     @Override
-    public void delete(Principal principal) {
-
+    public void delete(UserDetailsWithId user) {
+        service.deleteById(user.getId());
     }
 }

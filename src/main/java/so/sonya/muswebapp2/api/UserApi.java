@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import so.sonya.muswebapp2.dto.request.UpdateUserRequest;
 import so.sonya.muswebapp2.dto.response.UserResponse;
+import so.sonya.muswebapp2.security.details.UserDetailsWithId;
 
-import java.security.Principal;
 import java.util.UUID;
 
 import static so.sonya.muswebapp2.api.util.Constants.USER_API_URL;
@@ -19,7 +19,7 @@ import static so.sonya.muswebapp2.api.util.Constants.USER_API_URL;
 public interface UserApi {
     UserResponse getById(@PathVariable("id") UUID id);
     Page<UserResponse> getAll(Integer pageNumber, Integer pageSize);
-    UserResponse updateInfo(@RequestBody UpdateUserRequest updateUserRequest, @AuthenticationPrincipal Principal principal);
+    UserResponse updateInfo(@RequestBody UpdateUserRequest updateUserRequest, @AuthenticationPrincipal UserDetailsWithId user);
     UserResponse getByEmail(String email);
-    void delete(@AuthenticationPrincipal Principal principal);
+    void delete(@AuthenticationPrincipal UserDetailsWithId user);
 }

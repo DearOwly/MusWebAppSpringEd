@@ -20,17 +20,18 @@ public class EmailPasswordUserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return repository.findByEmail(email)
-                   .filter(user -> {
-                       if (!user.getAuthProvider().equals(AuthProvider.LOCAL)) {
-                           throw new AuthProviderMismatchException(user.getAuthProvider(), AuthProvider.LOCAL);
-                       }
-                       return true;
-                   })
-                   .map(user -> EmailPasswordUser.builder()
-                                    .email(user.getEmail())
-                                    .passwordHash(user.getPasswordHash())
-                                    .authorities(toGrantedAuthorities(user.getRoles()))
-                                    .build())
-                   .orElseThrow(() -> new EmailNotFoundException(email));
+                .filter(user -> {
+                    if (!user.getAuthProvider().equals(AuthProvider.LOCAL)) {
+                        throw new AuthProviderMismatchException(user.getAuthProvider(), AuthProvider.LOCAL);
+                    }
+                    return true;
+                })
+                .map(user -> EmailPasswordUser.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .passwordHash(user.getPasswordHash())
+                        .authorities(toGrantedAuthorities(user.getRoles()))
+                        .build())
+                .orElseThrow(() -> new EmailNotFoundException(email));
     }
 }
