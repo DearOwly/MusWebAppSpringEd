@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/index.css">
+    <title>MusWebApp</title>
+</head>
+
+
+<header>
+    <div class="header-content">
+        <a class="header-title" href="/profile" ><h2>MusWebApp</h2></a>
+    </div>
+
+    <div class="header-content">
+        <a class="header-title" href="/WEB-INF/view/log-in.ftl">Войти как гость</a>
+    </div>
+</header>
+
+<body>
+
+<main>
+    <form class="container" method="post">
+        <h2>РЕГИСТРАЦИЯ</h2>
+        <label>
+            <input class="sign__form" name="name" type="text" placeholder="Имя">
+        </label>
+        <label>
+            <input class="sign__form" name="email" type="email" placeholder="Email">
+        </label>
+        <label>
+            <input class="sign__form" name="password" type="password" placeholder="Password">
+        </label>
+        <input class="sign__btn" type="submit" value="Зарегистрироваться" placeholder="Регистрация">
+        <p>Есть аккаунт? <a href="/log-in">Войти</a></p>
+        <#if errorMessage??>
+        <label class="error-message"><b>${errorMessage}</b></label>
+    </#if>
+    </form>
+
+</main>
+
+<footer></footer>
+</body>
+</html>
