@@ -2,9 +2,11 @@ package so.sonya.muswebapp2.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import so.sonya.muswebapp2.dto.CommentDto;
-import so.sonya.muswebapp2.exception.notFound.CommentNotFoundException;
+import so.sonya.muswebapp2.dto.request.CreateCommentRequest;
+import so.sonya.muswebapp2.dto.response.CommentResponse;
+import so.sonya.muswebapp2.exception.CommentNotFoundException;
 import so.sonya.muswebapp2.mapper.CommentMapper;
+import so.sonya.muswebapp2.model.Comment;
 import so.sonya.muswebapp2.repository.CommentRepository;
 import so.sonya.muswebapp2.service.CommentService;
 
@@ -13,36 +15,32 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
-    private final CommentRepository commentRepository;
-    private final CommentMapper commentMapper;
+    private final CommentRepository repository;
+    private final CommentMapper mapper;
 
     @Override
-    public CommentDto findByAuthorId(UUID authorId) {
-        return commentMapper.toDto(
-                commentRepository.findByAuthor_Uuid(authorId)
-                        .orElseThrow(() -> new CommentNotFoundException()));
+    public CommentResponse findById(UUID id) {
+        return mapper.toResponse(
+                repository.findById(id)
+                              .orElseThrow(CommentNotFoundException::new));
     }
 
     @Override
-    public CommentDto findById(UUID id) {
-        return commentMapper.toDto(
-                commentRepository.findById(id)
-                        .orElseThrow(() -> new CommentNotFoundException()));
+    public CommentResponse findByAuthorId(UUID authorId) {
+        return mapper.toResponse(
+                repository.findByAuthorId(authorId)
+                              .orElseThrow(CommentNotFoundException::new));
     }
 
     @Override
-    public UUID save(CommentDto commentDto) {
-        return commentRepository
-                .save(commentMapper.toEntity(commentDto)).getUuid();
+    public CommentResponse save(CreateCommentRequest createCommentRequest) {
+        return mapper.toResponse(
+                repository.save(
+                        mapper.toEntity(createCommentRequest)));
     }
 
     @Override
     public void deleteById(UUID id) {
-        commentRepository.deleteById(id);
-    }
-
-    @Override
-    public CommentDto update(UUID uuid, CommentDto commentDto) {
-        return null;
+        repository.deleteById(id);
     }
 }

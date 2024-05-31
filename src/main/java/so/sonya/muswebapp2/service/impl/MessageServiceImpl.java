@@ -2,9 +2,11 @@ package so.sonya.muswebapp2.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import so.sonya.muswebapp2.dto.MessageDto;
-import so.sonya.muswebapp2.exception.notFound.MessageNotFoundException;
+import so.sonya.muswebapp2.dto.request.CreateMessageRequest;
+import so.sonya.muswebapp2.dto.response.MessageResponse;
+import so.sonya.muswebapp2.exception.MessageNotFoundException;
 import so.sonya.muswebapp2.mapper.MessageMapper;
+import so.sonya.muswebapp2.model.Message;
 import so.sonya.muswebapp2.repository.MessageRepository;
 import so.sonya.muswebapp2.service.MessageService;
 
@@ -13,35 +15,35 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
-    private final MessageRepository messageRepository;
-    private final MessageMapper messageMapper;
+    private final MessageRepository repository;
+    private final MessageMapper mapper;
+
     @Override
-    public MessageDto findByAuthorId(UUID authorId) {
-        return messageMapper.toDto(
-                messageRepository.findByAuthor_Uuid(authorId)
-                        .orElseThrow(() -> new MessageNotFoundException()));
+    public MessageResponse findById(UUID id) {
+
+        return mapper.toResponse(
+                repository.findById(id)
+                              .orElseThrow(MessageNotFoundException::new));
     }
 
     @Override
-    public MessageDto findById(UUID id) {
-        return messageMapper.toDto(
-                messageRepository.findById(id)
-                        .orElseThrow(() -> new MessageNotFoundException()));
+    public MessageResponse findByAuthorId(UUID authorId) {
+
+        return mapper.toResponse(
+                repository.findByAuthorId(authorId)
+                              .orElseThrow(MessageNotFoundException::new));
     }
 
     @Override
-    public UUID save(MessageDto messageDto) {
-        return messageRepository
-                .save(messageMapper.toEntity(messageDto)).getUuid();
+    public MessageResponse save(CreateMessageRequest createMessageRequest) {
+
+        return mapper.toResponse(
+                repository.save(
+                        mapper.toEntity(createMessageRequest)));
     }
 
     @Override
     public void deleteById(UUID  id) {
-        messageRepository.deleteById(id);
-    }
-
-    @Override
-    public MessageDto update(UUID uuid, MessageDto messageDto) {
-        return null;
+        repository.deleteById(id);
     }
 }

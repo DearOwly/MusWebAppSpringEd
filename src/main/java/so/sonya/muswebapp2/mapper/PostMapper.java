@@ -2,18 +2,20 @@ package so.sonya.muswebapp2.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.stereotype.Component;
-import so.sonya.muswebapp2.dto.PostDto;
-import so.sonya.muswebapp2.model.PostEntity;
+import org.mapstruct.MappingTarget;
+import so.sonya.muswebapp2.dto.request.CreatePostRequest;
+import so.sonya.muswebapp2.dto.request.UpdatePostRequest;
+import so.sonya.muswebapp2.dto.response.PostResponse;
+import so.sonya.muswebapp2.mapper.base.GenericUpdatingMapper;
+import so.sonya.muswebapp2.model.Post;
 
-@Component
 @Mapper(componentModel = "spring")
-public interface PostMapper {
-    @Mapping(source = "id", target = "uuid")
-    @Mapping(source = "authorId", target = "author.uuid")
-    PostEntity toEntity(PostDto postDto);
+public interface PostMapper extends GenericUpdatingMapper<Post, CreatePostRequest, UpdatePostRequest, PostResponse> {
+    @Override
+    @Mapping(source = "author.id", target = "authorId")
+    PostResponse toResponse(Post post);
 
-    @Mapping(source = "uuid", target = "id")
-    @Mapping(source = "author.uuid", target = "authorId")
-    PostDto toDto(PostEntity postEntity);
+    @Override
+    @Mapping(target = "id", ignore = true)
+    Post update(@MappingTarget Post post, UpdatePostRequest updatePostRequest);
 }

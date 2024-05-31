@@ -1,12 +1,15 @@
 package so.sonya.muswebapp2.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import so.sonya.muswebapp2.model.ThreadEntity;
+import org.springframework.data.jpa.repository.Query;
+import so.sonya.muswebapp2.model.Thread;
 
 import java.util.Optional;
 import java.util.UUID;
 
-public interface ThreadRepository extends JpaRepository<ThreadEntity, UUID> {
-    Optional<ThreadEntity> findByAuthor_Uuid(UUID authorId);
-    Optional<ThreadEntity> findByTitle(String title);
+public interface ThreadRepository extends JpaRepository<Thread, UUID> {
+    @Query("select t from Thread t where t.author.id = :authorId")
+    Optional<Thread> findByAuthorId(UUID authorId);
+
+    Optional<Thread> findByTitle(String title);
 }

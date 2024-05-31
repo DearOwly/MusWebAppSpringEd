@@ -2,18 +2,21 @@ package so.sonya.muswebapp2.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.stereotype.Component;
-import so.sonya.muswebapp2.dto.CommentDto;
-import so.sonya.muswebapp2.model.CommentEntity;
+import org.mapstruct.MappingTarget;
+import so.sonya.muswebapp2.dto.request.CreateCommentRequest;
+import so.sonya.muswebapp2.dto.request.UpdateCommentRequest;
+import so.sonya.muswebapp2.dto.response.CommentResponse;
+import so.sonya.muswebapp2.mapper.base.GenericMapper;
+import so.sonya.muswebapp2.mapper.base.GenericUpdatingMapper;
+import so.sonya.muswebapp2.model.Comment;
 
-@Component
 @Mapper(componentModel = "spring")
-public interface CommentMapper {
-    @Mapping(source = "id", target = "uuid")
-    @Mapping(source = "authorId", target = "author.uuid")
-    CommentEntity toEntity(CommentDto commentDto);
+public interface CommentMapper extends GenericUpdatingMapper<Comment, CreateCommentRequest, UpdateCommentRequest, CommentResponse> {
+    @Override
+    @Mapping(source = "author.id", target = "authorId")
+    CommentResponse toResponse(Comment comment);
 
-    @Mapping(source = "uuid", target = "id")
-    @Mapping(source = "author.uuid", target = "authorId")
-    CommentDto toDto(CommentEntity commentEntity);
+    @Override
+    @Mapping(target = "id", ignore = true)
+    Comment update(@MappingTarget Comment comment, UpdateCommentRequest updateCommentRequest);
 }

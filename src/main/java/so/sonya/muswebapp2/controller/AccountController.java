@@ -13,6 +13,7 @@ public class AccountController {
     public String login() {
         return "/account/login";
     }
+
     @GetMapping("/test")
     public String test() {
         return "/account/test";

@@ -2,18 +2,20 @@ package so.sonya.muswebapp2.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.stereotype.Component;
-import so.sonya.muswebapp2.dto.MessageDto;
-import so.sonya.muswebapp2.model.MessageEntity;
+import org.mapstruct.MappingTarget;
+import so.sonya.muswebapp2.dto.request.CreateMessageRequest;
+import so.sonya.muswebapp2.dto.request.UpdateMessageRequest;
+import so.sonya.muswebapp2.dto.response.MessageResponse;
+import so.sonya.muswebapp2.mapper.base.GenericUpdatingMapper;
+import so.sonya.muswebapp2.model.Message;
 
-@Component
 @Mapper(componentModel = "spring")
-public interface MessageMapper {
-    @Mapping(source = "uuid", target = "id")
-    @Mapping(source = "author.uuid", target = "authorId")
-    MessageDto toDto(MessageEntity messageEntity);
+public interface MessageMapper extends GenericUpdatingMapper<Message, CreateMessageRequest, UpdateMessageRequest, MessageResponse> {
+    @Override
+    @Mapping(source = "author.id", target = "authorId")
+    MessageResponse toResponse(Message message);
 
-    @Mapping(source = "id", target = "uuid")
-    @Mapping(source = "authorId", target = "author.uuid")
-    MessageEntity toEntity(MessageDto messageDto);
+    @Override
+    @Mapping(target = "id", ignore = true)
+    Message update(@MappingTarget Message message, UpdateMessageRequest updateMessageRequest);
 }
