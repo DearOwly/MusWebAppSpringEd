@@ -6,10 +6,12 @@ import java.util.UUID;
 
 @Schema(description = "Обсуждение")
 public record ThreadResponse(
-    @Schema(description = "Уникальный индентификатор обсуждения", example = "1ee88313-424a-49d0-b80b-f30c5d793d6a")
+    @Schema(description = "Уникальный индентификатор обсуждения",
+            example = "1ee88313-424a-49d0-b80b-f30c5d793d6a")
     UUID id,
 
-    @Schema(description = "Название обсуждения", example = "Название/Title")
+    @Schema(description = "Название обсуждения",
+            example = "Название/Title")
     String title,
 
     @Schema(description = "Описание обсуждения")
@@ -17,4 +19,4 @@ public record ThreadResponse(
 
     @Schema(description = "Уникальный идентификатор автора обсуждения")
     UUID authorId
-) { }
+) {}

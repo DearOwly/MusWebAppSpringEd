@@ -8,7 +8,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import so.sonya.muswebapp2.security.filters.JsonUsernamePasswordAuthenticationFilter;
 
-public final class JsonLoginConfigurer<H extends HttpSecurityBuilder<H>> extends AbstractAuthenticationFilterConfigurer<H, JsonLoginConfigurer<H>, JsonUsernamePasswordAuthenticationFilter> {
+public final class JsonLoginConfigurer<H extends HttpSecurityBuilder<H>>
+    extends AbstractAuthenticationFilterConfigurer<H, JsonLoginConfigurer<H>,
+                                                      JsonUsernamePasswordAuthenticationFilter> {
     public JsonLoginConfigurer() {
         super(new JsonUsernamePasswordAuthenticationFilter(), null);
     }

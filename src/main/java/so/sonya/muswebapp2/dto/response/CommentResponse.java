@@ -6,12 +6,9 @@ import java.util.UUID;
 
 @Schema(description = "Комментарий")
 public record CommentResponse(
-    @Schema(description = "Уникальный индентификатор комментария")
-    UUID id,
+    @Schema(description = "Уникальный индентификатор комментария") UUID id,
 
-    @Schema(description = "Текст комментария")
-    String text,
+    @Schema(description = "Текст комментария") String text,
 
-    @Schema(description = "Уникальный идентификатор автора комментария")
-    UUID authorId
-){}
+    @Schema(description = "Уникальный идентификатор автора комментария") UUID authorId
+) {}

@@ -3,22 +3,33 @@ package so.sonya.muswebapp2.security.details;
 import lombok.Builder;
 import lombok.Singular;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
 @Builder
-public class EmailPasswordUser implements UserDetailsWithId {
+public final class EmailPasswordUser implements UserDetailsWithId {
     private UUID id;
+
     private String email;
+
     private String passwordHash;
-    @Singular private Set<GrantedAuthority> authorities;
-    private boolean accountExpired;
-    private boolean accountLocked;
-    private boolean credentialsExpired;
-    @Builder.Default private boolean enabled = true;
+
+    @Singular
+    private Set<GrantedAuthority> authorities;
+
+    @Builder.Default
+    private boolean accountExpired = false;
+
+    @Builder.Default
+    private boolean accountLocked = false;
+
+    @Builder.Default
+    private boolean credentialsExpired = false;
+
+    @Builder.Default
+    private boolean enabled = true;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

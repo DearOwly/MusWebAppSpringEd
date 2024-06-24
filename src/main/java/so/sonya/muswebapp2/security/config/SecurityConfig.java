@@ -24,21 +24,31 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                   .csrf(AbstractHttpConfigurer::disable)
+        return http.csrf(AbstractHttpConfigurer::disable)
                    .authorizeHttpRequests(auth -> {
                        auth.requestMatchers("/").permitAll()
-                           .requestMatchers(LOGIN_PROCESSING_URL).permitAll()
-                           .requestMatchers(SIGNUP_URL).permitAll()
+                           .requestMatchers(
+                               LOGIN_PAGE_URL,
+                               LOGIN_PROCESSING_URL,
+                               SIGNUP_PAGE_URL,
+                               SIGNUP_URL
+                           ).permitAll()
+                           .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                            .anyRequest().authenticated();
+                   })
+                   .formLogin(form -> {
+                       form.usernameParameter("email")
+                           .passwordParameter("password")
+                           .loginPage(LOGIN_PAGE_URL)
+                           .loginProcessingUrl(LOGIN_PROCESSING_URL);
                    })
                    .oauth2Login(oauth2 -> {
                        oauth2.userInfoEndpoint(info -> {
-                           info.userService(oauth2UserService)
-                               .oidcUserService(oidcUserService);
-                       });
-                       oauth2.loginPage(LOGIN_PAGE_URL)
-                           .loginProcessingUrl(OAUTH2_LOGIN_PROCESSING_URL);
+                                 info.userService(oauth2UserService)
+                                     .oidcUserService(oidcUserService);
+                             })
+                             .loginPage(LOGIN_PAGE_URL)
+                             .loginProcessingUrl(OAUTH2_LOGIN_PROCESSING_URL);
                    })
                    .with(new JsonLoginConfigurer<>(), json -> {
                        json.usernameParameter("email")

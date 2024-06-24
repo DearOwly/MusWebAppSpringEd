@@ -1,20 +1,20 @@
 package so.sonya.muswebapp2.security.details;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
-import so.sonya.muswebapp2.exception.AuthProviderMismatchException;
-import so.sonya.muswebapp2.model.AuthProvider;
-import so.sonya.muswebapp2.model.User;
+import so.sonya.muswebapp2.model.user.AuthProvider;
+import so.sonya.muswebapp2.model.user.User;
 import so.sonya.muswebapp2.repository.UserRepository;
+import so.sonya.muswebapp2.security.exception.AuthProviderMismatchException;
 
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CustomOidcUserService extends OidcUserService {
     private final UserRepository repository;
 
@@ -26,9 +26,9 @@ public class CustomOidcUserService extends OidcUserService {
 
     private OidcUser processUser(OidcUserRequest request, OidcUser oidcUser) {
         String nameAttributeKey = request.getClientRegistration()
-                                           .getProviderDetails()
-                                           .getUserInfoEndpoint()
-                                           .getUserNameAttributeName();
+                                         .getProviderDetails()
+                                         .getUserInfoEndpoint()
+                                         .getUserNameAttributeName();
 
         String email = oidcUser.getEmail();
 
@@ -74,6 +74,8 @@ public class CustomOidcUserService extends OidcUserService {
     }
 
     private AuthProvider getAuthProvider(OidcUserRequest request) {
-        return AuthProvider.valueOf(request.getClientRegistration().getRegistrationId().toUpperCase());
+        return AuthProvider.valueOf(request.getClientRegistration()
+                                           .getRegistrationId()
+                                           .toUpperCase());
     }
 }

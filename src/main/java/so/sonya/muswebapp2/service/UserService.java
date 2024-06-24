@@ -1,20 +1,20 @@
 package so.sonya.muswebapp2.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import so.sonya.muswebapp2.dto.request.UpdateUserRequest;
 import so.sonya.muswebapp2.dto.response.UserResponse;
-import so.sonya.muswebapp2.service.base.GenericPagingService;
-import so.sonya.muswebapp2.service.base.GenericUpdatingService;
 
 import java.util.UUID;
 
-public interface UserService extends
-        GenericUpdatingService<UUID, UpdateUserRequest, UserResponse>,
-        GenericPagingService<UserResponse>{
-    UserResponse findById(UUID uuid);
+public interface UserService {
+    Page<UserResponse> findAll(Pageable pageable);
+
+    UserResponse findById(UUID id);
 
     UserResponse findByEmail(String email);
 
-    UserResponse findByNickname(String nickname);
+    UserResponse update(UUID id, UpdateUserRequest request);
 
-    void deleteById(UUID uuid);
+    void deleteById(UUID id);
 }

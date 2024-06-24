@@ -1,10 +1,4 @@
 spring:
-  datasource:
-    username: ENC(w4nIbUIOZbaivJJpAmOVWT9zbDkdsELi)
-    password: ENC(ongdF9DJUnbIMZUaW8LDz9SVmwmY8o7f)
-    url: ENC(s7n5B8yo8DLAi7JsiJCpvvP0Gj18F0VuA1NynLsUkSEnAQzSv4y5KI8loOFyj/Ziyu0lmJJ3CYQwBOIn47A2/g==)
-    hikari:
-      maximum-pool-size: 20
   jpa:
     hibernate:
       ddl-auto: update
@@ -19,11 +13,18 @@ spring:
           google:
             client-id: ENC(RJphtqwU6BuUzaPRi401MQ3vpy2WoptUuiO7KkdVzToE+NmSiWqwY85GezXQ9oOQS1g6GXYSmyjI9Lab22KUWXDJB5y77ldT+2Sipcw+YcJJE4m0p+pgVw==)
             client-secret: ENC(rsgCV10UugEXji77EgcdQSKoVkQJeLLUFAl5IpgCC/+haL5NNIf5GUJZLMNcd53q)
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
 logging:
   level:
-    org.hibernate:
-      SQL: trace
-      orm.jdbc.bind: trace
+    org:
+      hibernate:
+        SQL: trace
+        orm.jdbc.bind: trace
+      springframework:
+        security: trace
+
 jasypt:
   encryptor:
     algorithm: PBEWithMD5AndDES

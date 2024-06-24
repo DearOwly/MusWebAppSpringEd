@@ -1,68 +1,57 @@
 package so.sonya.muswebapp2.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import so.sonya.muswebapp2.dto.request.CreateMessageRequest;
-import so.sonya.muswebapp2.dto.request.UpdateMessageRequest;
-import so.sonya.muswebapp2.dto.response.MessageResponse;
-import so.sonya.muswebapp2.exception.MessageNotFoundException;
-import so.sonya.muswebapp2.mapper.MessageMapper;
+import org.springframework.transaction.annotation.Transactional;
+import so.sonya.muswebapp2.dto.request.LikeRequest;
+import so.sonya.muswebapp2.exception.forbidden.ForbiddenResourceModificationException;
+import so.sonya.muswebapp2.exception.notfound.MessageNotFoundException;
+import so.sonya.muswebapp2.exception.notfound.UserNotFoundException;
+import so.sonya.muswebapp2.model.Like;
 import so.sonya.muswebapp2.model.Message;
+import so.sonya.muswebapp2.model.user.User;
+import so.sonya.muswebapp2.repository.LikeRepository;
 import so.sonya.muswebapp2.repository.MessageRepository;
+import so.sonya.muswebapp2.repository.UserRepository;
 import so.sonya.muswebapp2.service.MessageService;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
     private final MessageRepository repository;
-    private final MessageMapper mapper;
+    private final LikeRepository likeRepository;
+    private final UserRepository userRepository;
 
     @Override
-    public MessageResponse findById(UUID id) {
-        return mapper.toResponse(
-                repository.findById(id)
-                              .orElseThrow(MessageNotFoundException::new));
-    }
+    public void like(LikeRequest request, UUID userId) {
+        Message message = repository.findById(request.resourceId())
+                                    .orElseThrow(MessageNotFoundException::new);
 
-    @Override
-    public MessageResponse findByAuthorId(UUID authorId) {
+        Optional<Like> likeOptional = likeRepository.findById(request.id());
 
-        return mapper.toResponse(
-                repository.findByAuthorId(authorId)
-                              .orElseThrow(MessageNotFoundException::new));
-    }
+        if (likeOptional.isPresent() && !request.like()) {
+            Like like = likeOptional.get();
 
-    @Override
-    public MessageResponse save(CreateMessageRequest createMessageRequest) {
-        return mapper.toResponse(
-                repository.save(
-                        mapper.toEntity(createMessageRequest)));
-    }
+            if (!like.getUser()
+                     .getId()
+                     .equals(userId)) {
+                throw new ForbiddenResourceModificationException(Message.class);
+            }
 
-    @Override
-    public void deleteById(UUID  id) {
-        repository.deleteById(id);
-    }
+            message.removeLike(like);
+        } else if (likeOptional.isEmpty() && request.like()) {
+            User user = userRepository.findById(userId)
+                                      .orElseThrow(UserNotFoundException::new);
 
-    @Override
-    public MessageResponse update(UUID uuid, UpdateMessageRequest updateMessageRequest) {
-        Message message = repository.getReferenceById(uuid);
+            Like like = new Like(user);
 
-        mapper.update(message, updateMessageRequest);
+            message.addLike(like);
+        }
 
-        return mapper.toResponse(repository.save(message));
-    }
-
-    @Override
-    public Page<MessageResponse> findAll(Integer pageNumber, Integer pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return repository
-                .findAll(pageable)
-                .map(mapper::toResponse);
+        repository.save(message);
     }
 }

@@ -6,7 +6,8 @@ import java.util.UUID;
 
 @Schema(description = "Пользователь")
 public record UserResponse(
-    @Schema(description = "Идентификатор пользователя", example = "ecbc5124-6879-480e-a7d9-816ebb3bf93f")
+    @Schema(description = "Идентификатор пользователя",
+            example = "ecbc5124-6879-480e-a7d9-816ebb3bf93f")
     UUID id,
 
     @Schema(description = "Имя", example = "Иван")

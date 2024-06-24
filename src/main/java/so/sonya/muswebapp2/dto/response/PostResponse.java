@@ -14,4 +14,4 @@ public record PostResponse(
 
     @Schema(description = "Уникальный идентификатор автора поста", example = "Название")
     UUID authorId
-) { }
+) {}

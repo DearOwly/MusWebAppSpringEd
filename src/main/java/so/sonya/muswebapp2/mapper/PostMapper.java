@@ -6,11 +6,13 @@ import org.mapstruct.MappingTarget;
 import so.sonya.muswebapp2.dto.request.CreatePostRequest;
 import so.sonya.muswebapp2.dto.request.UpdatePostRequest;
 import so.sonya.muswebapp2.dto.response.PostResponse;
-import so.sonya.muswebapp2.mapper.base.GenericUpdatingMapper;
+import so.sonya.muswebapp2.mapper.base.UpdatingEntityMapper;
+import so.sonya.muswebapp2.mapper.config.EntityMapperConfig;
 import so.sonya.muswebapp2.model.Post;
 
-@Mapper(componentModel = "spring")
-public interface PostMapper extends GenericUpdatingMapper<Post, CreatePostRequest, UpdatePostRequest, PostResponse> {
+@Mapper(config = EntityMapperConfig.class)
+public interface PostMapper
+    extends UpdatingEntityMapper<Post, CreatePostRequest, UpdatePostRequest, PostResponse> {
     @Override
     @Mapping(source = "author.id", target = "authorId")
     PostResponse toResponse(Post post);

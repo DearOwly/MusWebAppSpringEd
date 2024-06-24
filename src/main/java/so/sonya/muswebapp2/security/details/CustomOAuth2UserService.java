@@ -1,20 +1,20 @@
 package so.sonya.muswebapp2.security.details;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import so.sonya.muswebapp2.exception.AuthProviderMismatchException;
-import so.sonya.muswebapp2.model.AuthProvider;
-import so.sonya.muswebapp2.model.User;
+import so.sonya.muswebapp2.model.user.AuthProvider;
+import so.sonya.muswebapp2.model.user.User;
 import so.sonya.muswebapp2.repository.UserRepository;
+import so.sonya.muswebapp2.security.exception.AuthProviderMismatchException;
 
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final UserRepository repository;
 
@@ -24,11 +24,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         return processUser(request, user);
     }
 
-    private OAuth2User processUser(OAuth2UserRequest request, OAuth2User oAuth2User) {
+    private OAuth2User processUser(
+        OAuth2UserRequest request, OAuth2User oAuth2User
+    ) {
         String nameAttributeKey = request.getClientRegistration()
-                                      .getProviderDetails()
-                                      .getUserInfoEndpoint()
-                                      .getUserNameAttributeName();
+                                         .getProviderDetails()
+                                         .getUserInfoEndpoint()
+                                         .getUserNameAttributeName();
 
         String email = oAuth2User.getAttribute("email");
 
@@ -61,7 +63,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private User createUser(OAuth2UserRequest request, OAuth2User oAuth2User) {
         User user = User.builder()
-                        .authProvider(AuthProvider.valueOf(request.getClientRegistration().getRegistrationId().toUpperCase()))
+                        .authProvider(AuthProvider.valueOf(request.getClientRegistration()
+                                                                  .getRegistrationId()
+                                                                  .toUpperCase()))
                         .authProviderId(oAuth2User.getAttribute("sub"))
                         .email(oAuth2User.getAttribute("email"))
                         .emailVerified(oAuth2User.getAttribute("email_verified"))
@@ -73,6 +77,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private AuthProvider getAuthProvider(OAuth2UserRequest request) {
-        return AuthProvider.valueOf(request.getClientRegistration().getRegistrationId().toUpperCase());
+        return AuthProvider.valueOf(request.getClientRegistration()
+                                           .getRegistrationId()
+                                           .toUpperCase());
     }
 }

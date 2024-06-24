@@ -1,19 +1,31 @@
 package so.sonya.muswebapp2.service;
 
-import so.sonya.muswebapp2.dto.request.CreateThreadRequest;
-import so.sonya.muswebapp2.dto.request.UpdateThreadRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import so.sonya.muswebapp2.dto.request.*;
+import so.sonya.muswebapp2.dto.response.MessageResponse;
 import so.sonya.muswebapp2.dto.response.ThreadResponse;
-import so.sonya.muswebapp2.service.base.GenericPagingService;
-import so.sonya.muswebapp2.service.base.GenericService;
-import so.sonya.muswebapp2.service.base.GenericUpdatingService;
 
 import java.util.UUID;
 
-public interface ThreadService extends
-        GenericService<UUID, CreateThreadRequest, ThreadResponse>,
-        GenericUpdatingService<UUID, UpdateThreadRequest, ThreadResponse>,
-        GenericPagingService<ThreadResponse> {
-    ThreadResponse findByAuthorId(UUID authorId);
+public interface ThreadService {
+    Page<ThreadResponse> findAll(Pageable pageable);
 
-    ThreadResponse findByTitle(String title);
+    ThreadResponse findById(UUID id);
+
+    Page<ThreadResponse> findAllByAuthorId(UUID authorId, Pageable pageable);
+
+    ThreadResponse create(CreateThreadRequest request, UUID authorId);
+
+    ThreadResponse update(UpdateThreadRequest request, UUID authorId);
+
+    void deleteById(UUID id, UUID authorId);
+
+    Page<MessageResponse> findAllMessagesByThreadId(UUID id, Pageable pageable);
+
+    MessageResponse postMessage(UUID id, PostMessageRequest request, UUID userId);
+
+    MessageResponse editMessage(UUID id, EditMessageRequest request, UUID userId);
+
+    void deleteMessageById(UUID id, UUID messageId, UUID userId);
 }

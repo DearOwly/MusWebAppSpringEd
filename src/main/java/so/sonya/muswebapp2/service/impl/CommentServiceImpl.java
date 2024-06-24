@@ -1,68 +1,57 @@
 package so.sonya.muswebapp2.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import so.sonya.muswebapp2.dto.request.CreateCommentRequest;
-import so.sonya.muswebapp2.dto.request.UpdateCommentRequest;
-import so.sonya.muswebapp2.dto.response.CommentResponse;
-import so.sonya.muswebapp2.exception.CommentNotFoundException;
-import so.sonya.muswebapp2.mapper.CommentMapper;
+import org.springframework.transaction.annotation.Transactional;
+import so.sonya.muswebapp2.dto.request.LikeRequest;
+import so.sonya.muswebapp2.exception.forbidden.ForbiddenResourceModificationException;
+import so.sonya.muswebapp2.exception.notfound.CommentNotFoundException;
+import so.sonya.muswebapp2.exception.notfound.UserNotFoundException;
 import so.sonya.muswebapp2.model.Comment;
+import so.sonya.muswebapp2.model.Like;
+import so.sonya.muswebapp2.model.user.User;
 import so.sonya.muswebapp2.repository.CommentRepository;
+import so.sonya.muswebapp2.repository.LikeRepository;
+import so.sonya.muswebapp2.repository.UserRepository;
 import so.sonya.muswebapp2.service.CommentService;
 
+import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository repository;
-    private final CommentMapper mapper;
+    private final LikeRepository likeRepository;
+    private final UserRepository userRepository;
 
     @Override
-    public CommentResponse findById(UUID id) {
-        return mapper.toResponse(
-                repository.findById(id)
-                              .orElseThrow(CommentNotFoundException::new));
-    }
+    public void like(LikeRequest request, UUID userId) {
+        Comment comment = repository.findById(request.resourceId())
+                                    .orElseThrow(CommentNotFoundException::new);
 
-    @Override
-    public CommentResponse findByAuthorId(UUID authorId) {
-        return mapper.toResponse(
-                repository.findByAuthorId(authorId)
-                              .orElseThrow(CommentNotFoundException::new));
-    }
+        Optional<Like> likeOptional = likeRepository.findById(request.id());
 
-    @Override
-    public CommentResponse save(CreateCommentRequest createCommentRequest) {
-        return mapper.toResponse(
-                repository.save(
-                        mapper.toEntity(createCommentRequest)));
-    }
+        if (likeOptional.isPresent() && !request.like()) {
+            Like like = likeOptional.get();
 
-    @Override
-    public void deleteById(UUID id) {
-        repository.deleteById(id);
-    }
+            if (!like.getUser()
+                     .getId()
+                     .equals(userId)) {
+                throw new ForbiddenResourceModificationException(Comment.class);
+            }
 
-    @Override
-    public CommentResponse update(UUID uuid, UpdateCommentRequest updateCommentRequest) {
-        Comment comment = repository.getReferenceById(uuid);
+            comment.removeLike(like);
+        } else if (likeOptional.isEmpty() && request.like()) {
+            User user = userRepository.findById(userId)
+                                      .orElseThrow(UserNotFoundException::new);
 
-        mapper.update(comment, updateCommentRequest);
+            Like like = new Like(user);
 
-        return mapper.toResponse(repository.save(comment));
-    }
+            comment.addLike(like);
+        }
 
-    @Override
-    public Page<CommentResponse> findAll(Integer pageNumber, Integer pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return repository
-                .findAll(pageable)
-                .map(mapper::toResponse);
+        repository.save(comment);
     }
 }

@@ -1,23 +1,24 @@
 package so.sonya.muswebapp2.service.impl;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import so.sonya.muswebapp2.dto.request.SignUpRequest;
 import so.sonya.muswebapp2.dto.response.UserResponse;
 import so.sonya.muswebapp2.exception.AlreadyRegistredException;
-import so.sonya.muswebapp2.exception.PasswordMismatchException;
 import so.sonya.muswebapp2.mapper.UserMapper;
-import so.sonya.muswebapp2.model.AuthProvider;
-import so.sonya.muswebapp2.model.Role;
-import so.sonya.muswebapp2.model.User;
+import so.sonya.muswebapp2.model.user.AuthProvider;
+import so.sonya.muswebapp2.model.user.Role;
+import so.sonya.muswebapp2.model.user.User;
 import so.sonya.muswebapp2.repository.UserRepository;
 import so.sonya.muswebapp2.service.SignUpService;
 
 import java.util.Set;
 
 @Service
-@AllArgsConstructor
+@Transactional
+@RequiredArgsConstructor
 public class SignUpServiceImpl implements SignUpService {
     private final UserRepository repository;
     private final UserMapper mapper;
@@ -31,16 +32,13 @@ public class SignUpServiceImpl implements SignUpService {
             throw new AlreadyRegistredException(email);
         }
 
-        if (!signUpRequest.password().equals(signUpRequest.passwordConfirmation())) {
-            throw new PasswordMismatchException();
-        }
+        User user = mapper.fromRequest(signUpRequest);
 
-        User user = mapper.toEntity(signUpRequest);
         user.setEmailVerified(true);
         user.setAuthProvider(AuthProvider.LOCAL);
         user.setRoles(Set.of(Role.USER));
         user.setPasswordHash(passwordEncoder.encode(signUpRequest.password()));
 
-        return mapper.toResponse(user);
+        return mapper.toResponse(repository.save(user));
     }
 }

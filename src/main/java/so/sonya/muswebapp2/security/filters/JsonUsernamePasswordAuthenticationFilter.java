@@ -5,9 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,21 +15,18 @@ import static org.springframework.security.authentication.UsernamePasswordAuthen
 
 @Setter
 public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private static final Logger LOG = LoggerFactory.getLogger(JsonUsernamePasswordAuthenticationFilter.class);
-
     private boolean postOnly = true;
 
     public JsonUsernamePasswordAuthenticationFilter() {
         super();
     }
 
-    private JsonUsernamePasswordAuthenticationFilter(AuthenticationManager authenticationManager) {
-        super(authenticationManager);
-    }
-
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        if (postOnly && !request.getMethod().equals("POST")) {
+    public Authentication attemptAuthentication(
+        HttpServletRequest request, HttpServletResponse response
+    ) throws AuthenticationException {
+        if (postOnly && !request.getMethod()
+                                .equals("POST")) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }
 
@@ -42,16 +36,16 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonNode = mapper.readTree(request.getReader());
-            username = jsonNode.get(getUsernameParameter()).asText();
-            password = jsonNode.get(getPasswordParameter()).asText();
+            username = jsonNode.get(getUsernameParameter())
+                               .asText();
+            password = jsonNode.get(getPasswordParameter())
+                               .asText();
         } catch (Exception e) {
             throw new AuthenticationServiceException(e.getMessage());
         }
 
         username = (username != null) ? username.trim() : "";
         password = (password != null) ? password : "";
-
-        LOG.info("Username: {}, Password: {}", username, password);
 
         UsernamePasswordAuthenticationToken authRequest = unauthenticated(username, password);
 

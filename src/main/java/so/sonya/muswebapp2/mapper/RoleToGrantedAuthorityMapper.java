@@ -2,12 +2,12 @@ package so.sonya.muswebapp2.mapper;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import so.sonya.muswebapp2.model.Role;
+import so.sonya.muswebapp2.model.user.Role;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class RoleToGrantedAuthorityMapper {
+public final class RoleToGrantedAuthorityMapper {
     private static final String PREFIX = "ROLE_";
 
     public static GrantedAuthority toGrantedAuthority(Role role) {
@@ -20,7 +20,7 @@ public class RoleToGrantedAuthorityMapper {
 
     public static Set<GrantedAuthority> toGrantedAuthorities(Set<Role> roles) {
         return roles.stream()
-                   .map(RoleToGrantedAuthorityMapper::toGrantedAuthority)
-                   .collect(Collectors.toSet());
+                    .map(RoleToGrantedAuthorityMapper::toGrantedAuthority)
+                    .collect(Collectors.toSet());
     }
 }

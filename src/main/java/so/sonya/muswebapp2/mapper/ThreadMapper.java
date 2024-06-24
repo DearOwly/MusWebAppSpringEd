@@ -6,11 +6,13 @@ import org.mapstruct.MappingTarget;
 import so.sonya.muswebapp2.dto.request.CreateThreadRequest;
 import so.sonya.muswebapp2.dto.request.UpdateThreadRequest;
 import so.sonya.muswebapp2.dto.response.ThreadResponse;
-import so.sonya.muswebapp2.mapper.base.GenericUpdatingMapper;
+import so.sonya.muswebapp2.mapper.base.UpdatingEntityMapper;
+import so.sonya.muswebapp2.mapper.config.EntityMapperConfig;
 import so.sonya.muswebapp2.model.Thread;
 
-@Mapper(componentModel = "spring")
-public interface ThreadMapper extends GenericUpdatingMapper<Thread, CreateThreadRequest, UpdateThreadRequest, ThreadResponse> {
+@Mapper(config = EntityMapperConfig.class)
+public interface ThreadMapper
+    extends UpdatingEntityMapper<Thread, CreateThreadRequest, UpdateThreadRequest, ThreadResponse> {
     @Override
     @Mapping(source = "author.id", target = "authorId")
     ThreadResponse toResponse(Thread thread);
